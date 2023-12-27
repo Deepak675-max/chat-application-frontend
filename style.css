@@ -1,0 +1,58 @@
+body {
+    overflow-y: hidden;
+}
+
+#chat-user-profile {
+    position: relative;
+    left: 0%;
+    right: 0%;
+}
+
+#msg-time {
+    font-size: x-small;
+}
+
+#sender-msg {
+    max-width: 350px;
+    min-width: 200px;
+    background-color: #e0f7fa;
+    padding: 10px;
+    border-radius: 10px;
+}
+
+/* 
+#sender {
+    width: fit-content;
+    height: fit-content;
+    /* position: relative;
+    left: 86%; */
+/* }  */
+
+/* #receiver {
+    width: fit-content;
+    height: fit-content;
+} */
+
+#receiver-msg {
+    max-width: 350px;
+    min-width: 200px;
+    background-color: #e8eaf6;
+    padding: 10px;
+    border-radius: 10px;
+}
+
+#chat-box {
+    background-image: url('./images/whatsapp_background.jpeg');
+    overflow-y: scroll;
+    max-height: 545px;
+    min-height: 545px;
+}
+
+#chat-box-footer {
+    border-top: 1px solid #e8eaf6;
+}
+
+.typing-box {
+    padding-top: 11px;
+    padding-bottom: 11px;
+}
