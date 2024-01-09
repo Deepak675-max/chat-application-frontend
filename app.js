@@ -605,7 +605,7 @@ document.getElementById('reciever-profile-btn').addEventListener('click', async 
         const chatBoxBody = document.getElementById('chat-box-body');
         const userId = chatBoxBody.getAttribute('userId');
         const userDetails = await getUserDetails(userId);
-        showUserProfile(userDetails);
+        showReciverProfile(userDetails);
     } catch (error) {
         console.log(error);
         throw error;
@@ -662,6 +662,19 @@ function showUsers(users) {
 }
 
 function showUserProfile(userDetails) {
+    const profileImageBox = document.getElementById('user-profile-image');
+    profileImageBox.setAttribute('fileId', userDetails.FileId);
+    profileImageBox.innerHTML = `<img src="${userDetails.profilePicture ? "http://localhost:4500/files/" + userDetails.profilePicture : "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg"}" class="img-fluid rounded-circle"  alt="my-image" width="70px" height="70px">`
+    const userDetailsBody = document.getElementById('user-detail')
+    userDetailsBody.innerHTML = `<label for="name">name</label>
+            <h6 id="name" class="mb-2">${userDetails.userName}</h6>
+            <label for="email">Email</label>
+            <h6 id="email" class="mb-2">${userDetails.email}</h6>
+            <label for="phoneNumber">Phone Number</label>
+            <h6 id="phoneNumber" class="mb-2">${userDetails.phoneNumber}</h6>`
+}
+
+function showReciverProfile(userDetails) {
     const profileImageBox = document.getElementById('reciever-profile-image');
     profileImageBox.setAttribute('fileId', userDetails.FileId);
     profileImageBox.innerHTML = `<img src="${userDetails.profilePicture ? "http://localhost:4500/files/" + userDetails.profilePicture : "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg"}" class="img-fluid rounded-circle"  alt="my-image" width="70px" height="70px">`
