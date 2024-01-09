@@ -24,4 +24,4 @@ jobs:
             sudo systemctl enable apache2
             cd ~/chat_app/chat-application-frontend
             git pull origin main
-            sudo mv * ../../var/www/html
+            sudo mv * /var/www/html
