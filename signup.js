@@ -1,5 +1,5 @@
 const axoisInstance = axios.create({
-    baseURL: 'http://localhost:4500/api/auth'
+    baseURL: 'http://13.200.172.204:4500/api/auth'
 })
 
 async function signupUser(userData) {

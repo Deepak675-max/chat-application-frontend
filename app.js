@@ -1,77 +1,8 @@
-// // Axois Instance
-// const axoisInstance = axios.create({
-//     baseURL: 'http://localhost:4500/api'
-// })
-
-// const token = localStorage.getItem('token');
-
-
-
-
-// window.addEventListener('DOMContentLoaded', function (event) {
-//     event.preventDefault();
-//     getUserFromToken()
-//         .then(user => {
-//             document.querySelector('#navbarDropdown').innerHTML = user.userName
-//         })
-//         .then(() => {
-//             // loadExpenseData();
-//             console.log("show chat board here.");
-//         })
-//         .catch(error => {
-//             this.window.location.href = 'login.html'
-//         })
-// });
-
-
-// document.getElementById('logout-btn').addEventListener('click', function (e) {
-//     e.preventDefault();
-//     logoutUser()
-//         .then(responseData => {
-//             localStorage.clear('token');
-//             window.location.href = 'login.html';
-//         })
-//         .catch(error => {
-//             console.log(error);
-//         })
-// });
-
-// function addMessage(sender, text) {
-//     // Create a new message element
-//     var messageElement;
-//     if (sender == 'user') {
-//         messageElement = `<div class="d-flex justify-content-start mb-2">
-//                     <div class="sender-msg">
-//                         <p>${text}</p>
-//                     </div>
-//                 </div>`
-//     }
-//     else {
-//         messageElement = `<div class="d-flex justify-content-end mb-2">
-//         <div class="reciever-msg">
-//             <p>${text}</p>
-//         </div>
-//     </div>`
-//     }
-//     // Append the message to the chat container
-//     document.getElementById('chat-box-body').innerHTML += (messageElement);
-
-//     // Scroll to the bottom of the container
-//     document.getElementById('chat-box-body').scrollTop = document.getElementById('chat-box-body').scrollHeight;
-// }
-
-
-
-// for (let i = 0; i < 5; i++) {
-//     addMessage('user', 'Hi this is Deepak kamboj' + i + 1);
-//     addMessage('other', 'Hi this is akansha tyagi' + i + 1);
-
-// }
 const axoisInstance = axios.create({
-    baseURL: 'http://localhost:4500/api'
+    baseURL: 'http://13.200.172.204:4500/api'
 });
 
-const socket = io("http://localhost:4500");
+const socket = io("http://13.200.172.204:4500");
 
 
 $('#multiple-select-field').select2({
