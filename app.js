@@ -551,7 +551,7 @@ document.getElementById('create-group-btn').addEventListener('click', async (eve
     )
     const groupDetails = await createGroupChat(formData);
     socket.emit('joinGroup', { groupId: groupDetails.id });
-    window.location.reload();
+    window.location.href = "index.html";
 })
 
 
@@ -565,7 +565,7 @@ document.getElementById('create-chat-btn').addEventListener('click', async (even
             users: [parseInt(selectedOption.value)]
         }
         await createPrivateChat(chatDetails);
-        window.location.reload();
+        window.location.href = "index.html";
     } catch (error) {
         throw error;
     }
@@ -582,7 +582,7 @@ document.getElementById('update-profile-photo-btn').addEventListener('click', as
             fileDetails.append('userProfilePhoto', inputFile.files[0]);
         }
         await updateUserProfilePhoto(fileDetails)
-        window.location.reload();
+        window.location.href = "index.html";
     } catch (error) {
         console.log(error);
     }
