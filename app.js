@@ -396,7 +396,7 @@ window.addEventListener('DOMContentLoaded', async function (event) {
         const user = await getUserFromToken();
         socket.emit('storeUserInfo', { userId: user.userId });
         const userProfilePhoto = await getProfilePicture(user.userId);
-        document.getElementById('profile-photo').src = userProfilePhoto ? "http://localhost:4500/files/" + userProfilePhoto : "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg";
+        document.getElementById('profile-photo').src = userProfilePhoto ? "http://13.200.172.204:4500/files/" + userProfilePhoto : "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg";
         const rightBox = document.getElementById('right-box');
         rightBox.style.display = 'none';
         const demoBox = document.getElementById('demo-box');
@@ -628,7 +628,7 @@ document.getElementById('group-info-btn').addEventListener('click', async (event
 function showGroupDetails(groupDetails) {
     const profileImageBox = document.getElementById('group-profile-image');
     profileImageBox.setAttribute('fileId', groupDetails.FileId);
-    profileImageBox.innerHTML = `<img src="${groupDetails.profilePicture ? "http://localhost:4500/files/" + groupDetails.profilePicture : "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg"}" class="img-fluid rounded-circle"  alt="my-image" width="70px" height="70px">`
+    profileImageBox.innerHTML = `<img src="${groupDetails.profilePicture ? "http://13.200.172.204:4500/files/" + groupDetails.profilePicture : "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg"}" class="img-fluid rounded-circle"  alt="my-image" width="70px" height="70px">`
     const groupDetailsBody = document.getElementById('group-details');
     const groupMembersList = document.getElementById('group-members-list');
     groupDetailsBody.innerHTML = `<label for="name"><h6>Group Name</h6></label>
@@ -664,7 +664,7 @@ function showUsers(users) {
 function showUserProfile(userDetails) {
     const profileImageBox = document.getElementById('user-profile-image');
     profileImageBox.setAttribute('fileId', userDetails.FileId);
-    profileImageBox.innerHTML = `<img src="${userDetails.profilePicture ? "http://localhost:4500/files/" + userDetails.profilePicture : "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg"}" class="img-fluid rounded-circle"  alt="my-image" width="70px" height="70px">`
+    profileImageBox.innerHTML = `<img src="${userDetails.profilePicture ? "http://13.200.172.204:4500/files/" + userDetails.profilePicture : "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg"}" class="img-fluid rounded-circle"  alt="my-image" width="70px" height="70px">`
     const userDetailsBody = document.getElementById('user-detail')
     userDetailsBody.innerHTML = `<label for="name">name</label>
             <h6 id="name" class="mb-2">${userDetails.userName}</h6>
@@ -677,7 +677,7 @@ function showUserProfile(userDetails) {
 function showReciverProfile(userDetails) {
     const profileImageBox = document.getElementById('reciever-profile-image');
     profileImageBox.setAttribute('fileId', userDetails.FileId);
-    profileImageBox.innerHTML = `<img src="${userDetails.profilePicture ? "http://localhost:4500/files/" + userDetails.profilePicture : "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg"}" class="img-fluid rounded-circle"  alt="my-image" width="70px" height="70px">`
+    profileImageBox.innerHTML = `<img src="${userDetails.profilePicture ? "http://13.200.172.204:4500/files/" + userDetails.profilePicture : "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg"}" class="img-fluid rounded-circle"  alt="my-image" width="70px" height="70px">`
     const userDetailsBody = document.getElementById('reciever-detail')
     userDetailsBody.innerHTML = `<label for="name">name</label>
             <h6 id="name" class="mb-2">${userDetails.userName}</h6>
@@ -715,7 +715,7 @@ async function showAllChats(chats) {
         }
         people_list.innerHTML += `<div class="d-flex mb-2 id="list-item" chat_id="${chat.id}">
         <div chat_id="${chat.id}">
-            <img src="${profilePicture ? "http://localhost:4500/files/" + profilePicture : "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg"}" class="img-fluid rounded-circle" alt="my-image"
+            <img src="${profilePicture ? "http://13.200.172.204:4500/files/" + profilePicture : "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg"}" class="img-fluid rounded-circle" alt="my-image"
                 width="70px" height="70px" chat_id="${chat.id}">
         </div>
         <div class="d-flex"
@@ -797,7 +797,7 @@ async function showMessages(chatDetails, chatMessages) {
         chatBoxBody.setAttribute('userId', null);
         document.getElementById('chat-message').setAttribute('recipientId', null);
     }
-    chatImage.innerHTML = `<img src="${profilePicture ? "http://localhost:4500/files/" + profilePicture : "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg"}" class="img-fluid rounded-circle" alt="my-image"
+    chatImage.innerHTML = `<img src="${profilePicture ? "http://13.200.172.204:4500/files/" + profilePicture : "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg"}" class="img-fluid rounded-circle" alt="my-image"
     width="55px" height="55px">`
     chatName.innerText = chatTitle;
     if (receiver) {
