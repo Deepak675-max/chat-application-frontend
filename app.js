@@ -572,8 +572,8 @@ document.getElementById('create-chat-btn').addEventListener('click', async (even
 document.getElementById('update-profile-photo-btn').addEventListener('click', async (event) => {
     event.preventDefault();
     try {
-        const inputFile = document.getElementById('user-profile-image');
-        const fileId = document.getElementById('profile-image').getAttribute('fileId');
+        const inputFile = document.getElementById('input-image');
+        const fileId = document.getElementById('user-profile-image').getAttribute('fileId');
         var fileDetails = new FormData();
         fileDetails.append('fileId', fileId);
         if (inputFile.files.length > 0) {
