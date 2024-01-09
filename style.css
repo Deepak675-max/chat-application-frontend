@@ -1,5 +1,7 @@
 body {
     overflow-y: hidden;
+    padding: 15px;
+    background-color: bisque;
 }
 
 #chat-user-profile {
@@ -44,15 +46,32 @@ body {
 #chat-box {
     background-image: url('./images/whatsapp_background.jpeg');
     overflow-y: scroll;
-    max-height: 545px;
-    min-height: 545px;
+    max-height: 520px;
+    min-height: 520px;
+}
+
+#chat-box-body {
+    font-size: 15px;
 }
 
 #chat-box-footer {
+    padding: 5px;
     border-top: 1px solid #e8eaf6;
 }
 
-.typing-box {
+/* .typing-box {
     padding-top: 11px;
     padding-bottom: 11px;
+} */
+
+/* Default styles for all screen sizes */
+/* body {
+    font-size: 16px;
+} */
+
+#main-box {
+    /* box-shadow: black; */
+    box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.1),
+        -4px -4px 8px rgba(0, 0, 0, 0.1);
+    background-color: white;
 }

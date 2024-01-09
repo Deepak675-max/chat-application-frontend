@@ -30,10 +30,10 @@ function login(event) {
             })
             .catch(error => {
                 console.log(error);
-                msg.innerHTML = `<h5>Invalid username or password.</h5>`
+                msg.innerHTML = `<h5>${error.message}</h5>`
                 msg.style.color = 'red';
                 msg.style.textAlign = 'center';
-                setTimeout(() => msg.remove(), 5000);
+                setTimeout(() => msg.innerHTML = "", 5000);
             })
     }
 
@@ -51,6 +51,8 @@ async function loginUser(userData) {
         throw error;
     }
 }
+
+
 
 // async function sendResetPasswordLink(userData) {
 //     try {

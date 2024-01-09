@@ -3,33 +3,10 @@
 //     baseURL: 'http://localhost:4500/api'
 // })
 
-
 // const token = localStorage.getItem('token');
 
 
-// async function logoutUser() {
-//     try {
-//         // const token = localStorage.getItem('token');
-//         if (!token) {
-//             throw new Error('unauthorized user');
-//         }
-//         const config = {
-//             headers: {
-//                 'Content-Type': 'application/json',
-//                 'Authorization': `Bearer ${token}`
-//             }
-//         }
-//         console.log(config)
-//         const responseData = await axoisInstance.get('/auth/logout', config);
-//         console.log(responseData);
-//         if (responseData.data.error) {
-//             throw responseData.data.error
-//         }
-//         return responseData.data.data;
-//     } catch (error) {
-//         throw error;
-//     }
-// }
+
 
 // window.addEventListener('DOMContentLoaded', function (event) {
 //     event.preventDefault();
@@ -92,7 +69,17 @@
 // }
 const axoisInstance = axios.create({
     baseURL: 'http://localhost:4500/api'
-})
+});
+
+const socket = io("http://localhost:4500");
+
+
+$('#multiple-select-field').select2({
+    theme: "bootstrap-5",
+    width: $(this).data('width') ? $(this).data('width') : $(this).hasClass('w-100') ? '100%' : 'style',
+    placeholder: $(this).data('placeholder'),
+    closeOnSelect: false,
+});
 
 async function getUserFromToken() {
     try {
@@ -135,6 +122,44 @@ async function getAllUsers() {
     }
 }
 
+async function getUserDetails(userId) {
+    try {
+        const token = window.localStorage.getItem('token');
+        const config = {
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            }
+        }
+        const responseData = await axoisInstance.get('/users/' + userId, config);
+        if (responseData.data.error) {
+            throw responseData.data.error
+        }
+        return responseData.data.data.userDetails;
+    } catch (error) {
+        throw error;
+    }
+}
+
+async function getProfilePicture(userId) {
+    try {
+        const token = window.localStorage.getItem('token');
+        const config = {
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            }
+        }
+        const responseData = await axoisInstance.get('/users/profile-picture/' + userId, config);
+        if (responseData.data.error) {
+            throw responseData.data.error
+        }
+        return responseData.data.data.profilePicture;
+    } catch (error) {
+        throw error;
+    }
+}
+
 async function getUserAllChats() {
     try {
         const token = window.localStorage.getItem('token');
@@ -167,9 +192,53 @@ async function getChatDetails(chatId) {
         if (responseData.data.error) {
             throw responseData.data.error
         }
-        console.log(responseData.data.data.chat);
         return responseData.data.data.chat;
     } catch (error) {
+        throw error;
+    }
+}
+
+async function createGroupChat(chatDetalis) {
+    try {
+        const token = window.localStorage.getItem('token');
+        const config = {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+                'Authorization': `Bearer ${token}`
+            }
+        }
+        console.log('config = ', config);
+        console.log('chat body = ', chatDetalis);
+
+        const responseData = await axoisInstance.post('/users/group-chat', chatDetalis, config);
+        console.log("response = ", responseData)
+        if (responseData.data.error) {
+            throw responseData.data.error
+        }
+        return responseData.data.data.chatDetails;
+    } catch (error) {
+        console.log(error);
+        throw error;
+    }
+}
+
+async function createPrivateChat(chatDetalis) {
+    try {
+        const token = window.localStorage.getItem('token');
+        const config = {
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            }
+        }
+        const responseData = await axoisInstance.post('/users/private-chat', chatDetalis, config);
+        console.log("response = ", responseData)
+        if (responseData.data.error) {
+            throw responseData.data.error
+        }
+        return responseData.data.data.chatDetails;
+    } catch (error) {
+        console.log(error);
         throw error;
     }
 }
@@ -185,26 +254,224 @@ async function getChatMessages(chatId) {
         }
         const responseData = await axoisInstance.get('/chats/' + chatId + '/messages', config);
         if (responseData.data.error) {
+            throw responseData.data.error;
+        }
+        return responseData.data.data.chatMessages;
+    } catch (error) {
+        throw error;
+    }
+}
+
+async function addMessage(messageBody) {
+    try {
+        const token = window.localStorage.getItem('token');
+        const config = {
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            }
+        }
+        const responseData = await axoisInstance.post('/chats/message', messageBody, config);
+        if (responseData.data.error) {
             throw responseData.data.error
         }
-        console.log(responseData.data.data.chatDetails);
         return responseData.data.data.chatDetails;
     } catch (error) {
         throw error;
     }
 }
 
+async function updateUserProfilePhoto(fileDetails) {
+    try {
+        const token = window.localStorage.getItem('token');
+        const config = {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+                'Authorization': `Bearer ${token}`
+            }
+        }
+        const responseData = await axoisInstance.put('/users/update-profile-photo', fileDetails, config);
+        if (responseData.data.error) {
+            throw responseData.data.error
+        }
+        return responseData.data.data.chatDetails;
+    } catch (error) {
+        throw error;
+    }
+}
+
+async function getUserActivityStatus(userId) {
+    try {
+        const token = window.localStorage.getItem('token');
+        const config = {
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            }
+        }
+        const responseData = await axoisInstance.get('/users/' + userId + '/activity', config);
+        if (responseData.data.error) {
+            throw responseData.data.error
+        }
+        return responseData.data.data.userActivity;
+    } catch (error) {
+        throw error;
+    }
+}
+
+async function logoutUser() {
+    try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            throw new Error('unauthorized user');
+        }
+        const config = {
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            }
+        }
+        console.log(config)
+        const responseData = await axoisInstance.get('/auth/logout', config);
+        console.log(responseData);
+        if (responseData.data.error) {
+            throw responseData.data.error
+        }
+        return responseData.data.data;
+    } catch (error) {
+        throw error;
+    }
+}
+
+document.getElementById('logout-btn').addEventListener('click', (event) => {
+    event.preventDefault();
+    logoutUser()
+        .then(async (responseData) => {
+            localStorage.clear('token');
+            // socket.emit('disconnect');
+            window.location.href = 'login.html';
+            console.log("deepak");
+        })
+        .catch(error => {
+            console.log(error);
+        })
+});
+
+async function sendMessageToUser(event) {
+    event.preventDefault();
+    try {
+        const user = await getUserFromToken();
+        const chatMessage = document.getElementById('chat-message').value;
+        const recipientId = document.getElementById('chat-message').getAttribute('recipientId');
+        const chatId = document.getElementById('chat-box-body').getAttribute('chatId');
+        const chatBoxBody = document.getElementById('chat-box-body');
+        const messageBody = {
+            chatId: chatId,
+            senderId: user.userId,
+            content: chatMessage,
+        }
+        const createdMessage = await addMessage(messageBody);
+        const chatBox = document.getElementById('chat-box');
+        console.log("recipient id = ", recipientId);
+        if (recipientId != "null") {
+            chatBoxBody.innerHTML += `<div class="d-flex justify-content-end mb-2" id="sender">
+                <div id="sender-msg">
+                    <p class="m-2">${chatMessage}</p>
+                    <div class="d-flex justify-content-end">
+                        <span style="font-size: x-small;">${convertToCustomFormat(new Date())}</span>
+                    </div>
+                </div>
+            </div>`
+            socket.emit("privateMessage", { userId: recipientId, message: chatMessage });
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+        else {
+            chatBoxBody.innerHTML += `<div class="d-flex justify-content-end mb-2" id="sender">   
+                <div id="sender-msg">
+                    <h6 style="color: darkblue">you</h6>
+                    <p class="m-2">${chatMessage}</p>
+                    <div class="d-flex justify-content-end">
+                        <span style="font-size: x-small;">${convertToCustomFormat(new Date())}</span>
+                    </div>
+                </div>
+            </div>`
+            socket.emit("groupMessage", { groupId: chatId, message: chatMessage });
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+        document.getElementById('chat-message').value = "";
+
+    } catch (error) {
+        throw error;
+    }
+}
+
+document.getElementById('send-msg-btn').addEventListener('click', sendMessageToUser);
+document.getElementById('input-form').addEventListener('submit', sendMessageToUser);
+
+
+socket.on("privateMessage", ({ userId, message }) => {
+    const chatBoxBody = document.getElementById('chat-box-body');
+    const chatBox = document.getElementById('chat-box');
+    chatBoxBody.innerHTML += `<div class="d-flex justify-content-start mb-2" id="receiver">
+        <div id="receiver-msg">
+            <p class="m-2">${message}</p>
+            <div class="d-flex justify-content-end">
+                <span style="font-size: x-small;">${convertToCustomFormat(new Date())}</span>
+            </div>
+        </div>
+    </div>`
+    chatBox.scrollTop = chatBox.scrollHeight;
+});
+
+socket.on("groupMessage", async ({ userId, message }) => {
+    const chatBoxBody = document.getElementById('chat-box-body');
+    const chatBox = document.getElementById('chat-box');
+    const user = await getUserDetails(userId);
+    chatBoxBody.innerHTML += `<div class="d-flex justify-content-start mb-2" id="receiver">
+        <div id="receiver-msg">
+            <h6 style="color: rgb(76, 114, 76)">${user.userName}</h6>
+            <p class="m-2">${message}</p>
+            <div class="d-flex justify-content-end">
+                <span style="font-size: x-small;">${convertToCustomFormat(new Date())}</span>
+            </div>
+        </div>
+    </div>`
+    chatBox.scrollTop = chatBox.scrollHeight;
+});
+
+socket.on("getUserActivityStatus", async ({ userId, status }) => {
+    const chatBoxBody = document.getElementById('chat-box-body');
+    const userStatus = document.getElementById('user-status');
+    const currReciverId = chatBoxBody.getAttribute("userId");
+    if (currReciverId == userId) {
+        if (status === "Online")
+            userStatus.innerText = status;
+        else {
+            userStatus.innerText = "";
+            setTimeout(() => {
+                userStatus.innerText = convertToCustomFormat(status, true);
+            }, 3000)
+        }
+    }
+});
+
+
+
 window.addEventListener('DOMContentLoaded', async function (event) {
     try {
         event.preventDefault();
         const userAllChats = await getUserAllChats();
         showAllChats(userAllChats);
+        const user = await getUserFromToken();
+        socket.emit('storeUserInfo', { userId: user.userId });
+        const userProfilePhoto = await getProfilePicture(user.userId);
+        document.getElementById('profile-photo').src = userProfilePhoto ? "http://localhost:4500/files/" + userProfilePhoto : "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg";
         const rightBox = document.getElementById('right-box');
         rightBox.style.display = 'none';
         const demoBox = document.getElementById('demo-box');
         demoBox.style.display = 'block';
         const demoContent = document.getElementById('demo-content');
-        demoContent.innerHTML = `   <div class="_3SOOk" style="opacity: 1;"><span data-icon="intro-md-beta-logo-light"
+        demoContent.innerHTML = `<div class="_3SOOk" style="opacity: 1;"><span data-icon="intro-md-beta-logo-light"
         class="_3PwsU"><svg viewBox="0 0 303 172" width="360"
             preserveAspectRatio="xMidYMid meet" class="" fill="none">
             <title>intro-md-beta-logo-light</title>
@@ -258,14 +525,190 @@ window.addEventListener('DOMContentLoaded', async function (event) {
                 fill="white" stroke="#316474"></path>
         </svg></span></div>`
         // rightBox.style.backgroundImage = url("./images/whatsapp_background.jpeg");
-        console.log(userAllChats);
+        // console.log(userAllChats);
     } catch (error) {
         this.window.location.href = 'login.html'
         console.log(error);
     }
 
+});
+
+const debouncedStopTyping = _.debounce(() => {
+    const chatBoxBody = this.document.getElementById('chat-box-body');
+    const currReciverId = chatBoxBody.getAttribute("userId");
+    console.log("typing stoped");
+    socket.emit('stopTyping', { recieverId: currReciverId });
+}, 1000);
+
+document.getElementById('chat-message').addEventListener('input', async () => {
+    console.log("typing");
+    const chatBoxBody = document.getElementById('chat-box-body');
+    const currReciverId = chatBoxBody.getAttribute("userId");
+    socket.emit('startTyping', { recieverId: currReciverId });
+    debouncedStopTyping();
+});
+
+socket.on('userTyping', async ({ userId, typing, status }) => {
+    const userStatus = document.getElementById('user-status');
+    const chatBoxBody = document.getElementById('chat-box-body');
+    const currReciverId = chatBoxBody.getAttribute("userId");
+    console.log("curr recviever = ", currReciverId);
+    console.log("incoming user = ", userId);
+    if (currReciverId == userId) {
+        if (typing) {
+            userStatus.innerText = "typing...";
+        }
+        else {
+            if (status === "Online")
+                userStatus.innerText = status;
+            else {
+                userStatus.innerText = "";
+                setTimeout(() => {
+                    userStatus.innerText = convertToCustomFormat(status, true);
+                }, 3000)
+            }
+        }
+    }
 })
 
+document.getElementById('group-btn').addEventListener('click', async (event) => {
+    event.preventDefault();
+    const multipleSelect = document.getElementById('multiple-select-field');
+    const allUsers = await getAllUsers();
+    console.log(allUsers);
+    multipleSelect.innerHTML = "";
+    allUsers.map(user => {
+        var newOption = document.createElement("option");
+        newOption.value = user.id;
+        newOption.textContent = user.userName
+        multipleSelect.appendChild(newOption);
+    })
+})
+
+
+document.getElementById('private-chat-btn').addEventListener('click', async (event) => {
+    event.preventDefault();
+    const multipleSelect = document.getElementById('users');
+    console.log(multipleSelect.innerHTML);
+    const allUsers = await getAllUsers();
+    console.log(allUsers);
+    multipleSelect.innerHTML = "<option selected>Select User</option>"
+    allUsers.map(user => {
+        var newOption = document.createElement("option");
+        newOption.value = user.id;
+        newOption.textContent = user.userName
+        multipleSelect.appendChild(newOption);
+    })
+})
+
+
+document.getElementById('create-group-btn').addEventListener('click', async (event) => {
+    const groupName = document.getElementById('group-name');
+    const inputFile = document.getElementById('group-image');
+    const selectElement = document.getElementById('multiple-select-field');
+    let selectedValues = Array.from(selectElement.selectedOptions);
+    let formData = new FormData();
+    formData.append('chatName', groupName.value);
+    formData.append('isGroupChat', true);
+    if (inputFile.files.length > 0) {
+        formData.append('fileInput', inputFile.files[0]);
+    }
+    await Promise.all(
+        selectedValues.map(item => {
+            formData.append('users[]', (parseInt(item.value)));
+        })
+    )
+    const groupDetails = await createGroupChat(formData);
+    socket.emit('joinGroup', { groupId: groupDetails.id });
+})
+
+
+document.getElementById('create-chat-btn').addEventListener('click', async (event) => {
+    event.preventDefault();
+    try {
+        const selectElement = document.getElementById('users');
+        const selectedOption = selectElement.options[selectElement.selectedIndex];
+        console.log("option value = ", selectedOption.value);
+        const chatDetails = {
+            users: [parseInt(selectedOption.value)]
+        }
+        await createPrivateChat(chatDetails);
+    } catch (error) {
+        throw error;
+    }
+});
+
+document.getElementById('update-profile-photo-btn').addEventListener('click', async (event) => {
+    event.preventDefault();
+    try {
+        const inputFile = document.getElementById('user-profile-photo');
+        const fileId = document.getElementById('profile-image').getAttribute('fileId');
+        var fileDetails = new FormData();
+        fileDetails.append('fileId', fileId);
+        if (inputFile.files.length > 0) {
+            fileDetails.append('userProfilePhoto', inputFile.files[0]);
+        }
+        await updateUserProfilePhoto(fileDetails)
+    } catch (error) {
+        console.log(error);
+    }
+})
+
+document.getElementById('profile-btn').addEventListener('click', async (event) => {
+    event.preventDefault();
+    try {
+        const user = await getUserFromToken();
+        console.log("user from token = ", user);
+        const userDetails = await getUserDetails(user.userId);
+        console.log("user details = ", userDetails);
+        showUserProfile(userDetails);
+    } catch (error) {
+        console.log(error);
+        throw error;
+    }
+})
+
+document.getElementById('reciever-profile-btn').addEventListener('click', async (event) => {
+    event.preventDefault();
+    try {
+        const chatBoxBody = document.getElementById('chat-box-body');
+        const userId = chatBoxBody.getAttribute('userId');
+        const userDetails = await getUserDetails(userId);
+        showUserProfile(userDetails);
+    } catch (error) {
+        console.log(error);
+        throw error;
+    }
+});
+
+document.getElementById('group-info-btn').addEventListener('click', async (event) => {
+    event.preventDefault();
+    try {
+        const chatBoxBody = document.getElementById('chat-box-body');
+        const chatId = chatBoxBody.getAttribute('chatId');
+        const chatDetails = await getChatDetails(chatId);
+        showGroupDetails(chatDetails);
+    } catch (error) {
+        console.log(error);
+        throw error;
+    }
+});
+
+function showGroupDetails(groupDetails) {
+    const profileImageBox = document.getElementById('group-profile-image');
+    profileImageBox.setAttribute('fileId', groupDetails.FileId);
+    profileImageBox.innerHTML = `<img src="${groupDetails.profilePicture ? "http://localhost:4500/files/" + groupDetails.profilePicture : "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg"}" class="img-fluid rounded-circle"  alt="my-image" width="70px" height="70px">`
+    const groupDetailsBody = document.getElementById('group-details');
+    const groupMembersList = document.getElementById('group-members-list');
+    groupDetailsBody.innerHTML = `<label for="name"><h6>Group Name</h6></label>
+            <p id="name" class="mb-2">${groupDetails.chatName}</p>
+            <label for="email"><h6>Group Admin</h6></label>
+            <p id="email" class="mb-2">${groupDetails.groupAdmin}</p>`
+    console.log(groupDetails.Users);
+    groupDetails.Users.map(user => {
+        groupMembersList.innerHTML += `<li>${user.userName} - <span style="font-size: x-small;">${user.phoneNumber}</span></li>`
+    })
+}
 
 function showUsers(users) {
     const people_list = document.getElementById('people-list');
@@ -281,18 +724,32 @@ function showUsers(users) {
             <div class="card-body mb-2">
                 <h6 class="card-text" id="card-user-name">${user.userName}</h6>
                 <p class="card-text" id="last-message">${user.last}</p>
-
             </div>
         </div>
     </div>`
     })
 }
 
+function showUserProfile(userDetails) {
+    const profileImageBox = document.getElementById('reciever-profile-image');
+    profileImageBox.setAttribute('fileId', userDetails.FileId);
+    profileImageBox.innerHTML = `<img src="${userDetails.profilePicture ? "http://localhost:4500/files/" + userDetails.profilePicture : "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg"}" class="img-fluid rounded-circle"  alt="my-image" width="70px" height="70px">`
+    const userDetailsBody = document.getElementById('reciever-detail')
+    userDetailsBody.innerHTML = `<label for="name">name</label>
+            <h6 id="name" class="mb-2">${userDetails.userName}</h6>
+            <label for="email">Email</label>
+            <h6 id="email" class="mb-2">${userDetails.email}</h6>
+            <label for="phoneNumber">Phone Number</label>
+            <h6 id="phoneNumber" class="mb-2">${userDetails.phoneNumber}</h6>`
+}
+
+
 async function getReceiverName(chatId) {
+    console.log(chatId);
     const currUser = await getUserFromToken();
     const chatUsers = await getChatDetails(chatId);
-    console.log(chatUsers);
     const receiver = chatUsers.Users.find(user => user.id !== currUser.userId);
+    console.log('receiver = ', receiver);
     return receiver.userName;
 }
 
@@ -301,17 +758,27 @@ async function showAllChats(chats) {
     const people_list = document.getElementById('people-list');
     people_list.innerHTML = '';
     chats.map(async (chat) => {
-        console.log(chat);
+        let receiver;
+        let profilePicture = null;
+        if (!chat.isGroupChat) {
+            const currUser = await getUserFromToken();
+            const chatUsers = await getChatDetails(chat.id);
+            receiver = chatUsers.Users.find(user => user.id !== currUser.userId);
+            profilePicture = await getProfilePicture(receiver.id);
+        }
+        else {
+            profilePicture = chat.profilePicture;
+        }
         people_list.innerHTML += `<div class="d-flex mb-2 id="list-item" chat_id="${chat.id}">
         <div chat_id="${chat.id}">
-            <img src="./images/my-image.jpeg" class="img-fluid rounded-circle" alt="my-image"
+            <img src="${profilePicture ? "http://localhost:4500/files/" + profilePicture : "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg"}" class="img-fluid rounded-circle" alt="my-image"
                 width="70px" height="70px" chat_id="${chat.id}">
         </div>
         <div class="d-flex"
             style="margin-left: 15px; width: 100%; border-bottom: 1px solid #e9edef;" chat_id="${chat.id}">
             <div class="card-body mb-2" chat_id="${chat.id}">
-                <h6 class="card-text" id="card-user-name" chat_id="${chat.id}">${chat.isGroupChat ? chat.chatName : await getReceiverName(chat.id)}</h6>
-                <p class="card-text" id="last-message" chat_id="${chat.id}">${chat.lastMessage ? chat.lastMessage : ''}</p>
+                <h6 class="card-text" id="card-user-name" chat_id="${chat.id}">${chat.isGroupChat ? chat.chatName : receiver.userName}</h6>
+                <p class="card-text" id="last-message" style="font-size: small;" chat_id="${chat.id}">${chat.lastMessage ? chat.lastMessage : ''}</p>
             </div>
         </div>
     </div>`
@@ -328,16 +795,19 @@ async function showAllChats(chats) {
 document.getElementById('people-list').addEventListener('click', async function (event) {
     event.preventDefault();
     const chatId = event.target.getAttribute('chat_id');
-    const chatDetails = await getChatMessages(chatId);
+    const chatMessages = await getChatMessages(chatId);
+    const chatDetails = await getChatDetails(chatId);
     console.log("chat details: ", chatDetails);
-    await showMessages(chatDetails);
+    await showMessages(chatDetails, chatMessages);
 })
 
-function convertToCustomFormat(isoString) {
+function convertToCustomFormat(isoString, status = false) {
     const date = new Date(isoString);
     const today = new Date(); // Current date and time
     const options = { hour: 'numeric', minute: 'numeric', hour12: true };
-
+    if (status) {
+        return "last seen today at " + date.toLocaleTimeString('en-US', options);
+    }
     if (date.toDateString() === today.toDateString()) {
         // If the date is today, display "today" instead of the date
         return "today, " + date.toLocaleTimeString('en-US', options);
@@ -348,45 +818,113 @@ function convertToCustomFormat(isoString) {
     }
 }
 
-async function showMessages(chatDetails) {
-    const rightBox = document.getElementById('right-box');
-    rightBox.style.display = 'block';
+async function showMessages(chatDetails, chatMessages) {
     const demoBox = document.getElementById('demo-box');
     demoBox.style.display = 'none';
+    const demoContent = document.getElementById('demo-content');
+    demoContent.style.display = 'none';
+    const rightBox = document.getElementById('right-box');
+    rightBox.style.display = 'block';
     const chatImage = document.getElementById('chat-image');
     const chatName = document.getElementById('chat-name');
     const userStatus = document.getElementById('user-status');
-    chatImage.innerHTML = `<img src="${chatDetails.chatImage ? chatDetails.chatImage : "./images/my-image.jpeg"}" class="img-fluid rounded-circle" alt="my-image"
-    width="55px" height="55px">`
-    chatName.innerText = chatDetails.isGroupChat ? chatDetails.chatName : await getReceiverName(chatDetails.id);
-    userStatus.innerText = 'last seen at 10:30 AM';
     const chatBoxBody = document.getElementById('chat-box-body');
+    const chatBox = document.getElementById('chat-box');
+    document.getElementById('chat-message').value = "";
+    let profilePicture = null;
+    let chatTitle = null;
+    console.log(chatDetails);
+    let receiver = null;
+    if (!chatDetails.isGroupChat) {
+        document.getElementById('reciever-profile-btn').style.display = "block";
+        document.getElementById('group-info-btn').style.display = "none";
+        const currUser = await getUserFromToken();
+        receiver = chatDetails.Users.find(user => user.id !== currUser.userId);
+        profilePicture = await getProfilePicture(receiver.id);
+        chatBoxBody.setAttribute('userId', receiver.id);
+        document.getElementById('chat-message').setAttribute('recipientId', receiver.id);
+        chatTitle = receiver.userName;
+    }
+    else {
+        document.getElementById('reciever-profile-btn').style.display = "none";
+        document.getElementById('group-info-btn').style.display = "block";
+        profilePicture = chatDetails.profilePicture;
+        chatTitle = chatDetails.chatName;
+        chatBoxBody.setAttribute('userId', null);
+        document.getElementById('chat-message').setAttribute('recipientId', null);
+    }
+    chatImage.innerHTML = `<img src="${profilePicture ? "http://localhost:4500/files/" + profilePicture : "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg"}" class="img-fluid rounded-circle" alt="my-image"
+    width="55px" height="55px">`
+    chatName.innerText = chatTitle;
+    if (receiver) {
+        const userActivity = await getUserActivityStatus(receiver.id);
+        if (userActivity && userActivity.status === "Online") {
+            userStatus.innerText = userActivity.status;
+        } else if (userActivity) {
+            userStatus.innerText = convertToCustomFormat(userActivity.updatedAt, true);
+        } else {
+            userStatus.innerText = "";
+        }
+    } else {
+        userStatus.innerText = "";
+    }
     chatBoxBody.innerHTML = '';
+    chatBoxBody.setAttribute("chatId", chatDetails.id);
     const currUser = await getUserFromToken();
-    console.log(chatDetails.Messages);
-    chatDetails.Messages.map(message => {
-        if (message.senderId !== currUser.userId) {
-            chatBoxBody.innerHTML += `<div class="d-flex justify-content-start" id="receiver">
-                <div id="receiver-msg">
-                    <p class="m-2">${message.content}</p>
-                    <div class="d-flex justify-content-end">
-                        <span style="font-size: x-small;">${convertToCustomFormat(message.updatedAt)}</span>
+    console.log(chatMessages);
+    if (receiver)
+        for (let i = 0; i < chatMessages.length; i++) {
+            const message = chatMessages[i];
+            if (message.senderId !== currUser.userId) {
+                chatBoxBody.innerHTML += `<div class="d-flex justify-content-start mb-2" id="receiver">
+                    <div id="receiver-msg">
+                        <p class="m-2">${message.content}</p>
+                        <div class="d-flex justify-content-end">
+                            <span style="font-size: x-small;">${convertToCustomFormat(message.updatedAt)}</span>
+                        </div>
                     </div>
-                </div>
-            </div>`
-        }
-        else {
-            chatBoxBody.innerHTML += `<div class="d-flex justify-content-end" id="sender">
-                <div id="sender-msg">
-                    <p class="m-2">${message.content}</p>
-                    <div class="d-flex justify-content-end">
-                        <span style="font-size: x-small;">${convertToCustomFormat(message.updatedAt)}</span>
+                </div>`
+            }
+            else {
+                chatBoxBody.innerHTML += `<div class="d-flex justify-content-end mb-2" id="sender">
+                    <div id="sender-msg">
+                        <p class="m-2">${message.content}</p>
+                        <div class="d-flex justify-content-end">
+                            <span style="font-size: x-small;">${convertToCustomFormat(message.updatedAt)}</span>
+                        </div>
                     </div>
-                </div>
-            </div>`
+                </div>`
+            }
         }
+    else
+        for (let i = 0; i < chatMessages.length; i++) {
+            const message = chatMessages[i];
+            const userDetails = await getUserDetails(message.senderId);
 
-    })
+            if (message.senderId !== currUser.userId) {
+                chatBoxBody.innerHTML += `<div class="d-flex justify-content-start mb-2" id="receiver">
+                    <div id="receiver-msg">
+                        <h6 style="color: rgb(76, 114, 76)">${userDetails.userName}</h6>
+                        <p class="m-2">${message.content}</p>
+                        <div class="d-flex justify-content-end">
+                            <span style="font-size: x-small;">${convertToCustomFormat(message.updatedAt)}</span>
+                        </div>
+                    </div>
+                    </div>`
+            }
+            else {
+                chatBoxBody.innerHTML += `<div class="d-flex justify-content-end mb-2" id="sender">
+                    <div id="sender-msg">
+                        <h6 style="color: darkblue">you</h6>
+                        <p class="m-2">${message.content}</p>
+                        <div class="d-flex justify-content-end">
+                            <span style="font-size: x-small;">${convertToCustomFormat(message.updatedAt)}</span>
+                        </div>
+                    </div>
+                    </div>`
+            }
+        }
+    chatBox.scrollTop = chatBox.scrollHeight;
 
 }
 
