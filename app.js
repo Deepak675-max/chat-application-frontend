@@ -780,6 +780,7 @@ function convertToCustomFormat(isoString, status = false) {
             return "last seen " + date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) + " at " + date.toLocaleTimeString('en-US', options);
         }
     }
+    console.log("not status");
     if (date.toDateString() === today.toDateString()) {
         // If the date is today, display "today" instead of the date
         return "today, " + date.toLocaleTimeString('en-US', options);
