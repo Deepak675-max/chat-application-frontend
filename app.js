@@ -727,10 +727,23 @@ async function showAllChats(chats) {
                         <p class="card-text" id="last-message" style="font-size: small;" chat_id="${chat.id}">${chat.lastMessage ? chat.lastMessage : ''}</p>
                     </div>
                     <div class="dropdown my-3">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                            <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zm2.46-7.12l1.41-1.41L12 12.59l2.12-2.12 1.41 1.41L13.41 14l2.12 2.12-1.41 1.41L12 15.41l-2.12 2.12-1.41-1.41L10.59 14l-2.13-2.12zM15.5 4l-1-1h-5l-1 1H5v2h14V4z"/>
-                        </svg>
-                    </div>
+                            <svg viewBox="0 0 24 24" height="24" width="24" preserveAspectRatio="xMidYMid meet"
+                                class="dropdown-toggle" version="1.1" x="0px" y="0px" enable-background="new 0 0 24 24"
+                                data-bs-toggle="dropdown">
+                                <title>menu</title>
+                                <path fill="currentColor"
+                                    d="M12,7c1.104,0,2-0.896,2-2c0-1.105-0.895-2-2-2c-1.104,0-2,0.894-2,2 C10,6.105,10.895,7,12,7z M12,9c-1.104,0-2,0.894-2,2c0,1.104,0.895,2,2,2c1.104,0,2-0.896,2-2C13.999,9.895,13.104,9,12,9z M12,15 c-1.104,0-2,0.894-2,2c0,1.104,0.895,2,2,2c1.104,0,2-0.896,2-2C13.999,15.894,13.104,15,12,15z">
+                                </path>
+                            </svg>
+                            <ul class="dropdown-menu">
+                                <li>
+                                    <button type="button" class="dropdown-item" data-bs-toggle="modal"
+                                        data-bs-target="#groupModal" id="delete-chat-btn">
+                                        Delete Chat
+                                    </button>
+                                </li>
+                            </ul>
+                        </div>
             </div>
         </div>`
     })
