@@ -772,9 +772,11 @@ function convertToCustomFormat(isoString, status = false) {
     if (status) {
         if (date.toDateString() === today.toDateString()) {
             // If the date is today, display "today" instead of the date
+            console.log("today date");
             return "last seen today at " + date.toLocaleTimeString('en-US', options);
         }
         else {
+            console.log("previous date");
             return "last seen " + date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) + " at " + date.toLocaleTimeString('en-US', options);
         }
     }
