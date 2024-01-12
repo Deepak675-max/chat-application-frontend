@@ -726,7 +726,7 @@ async function showAllChats(chats) {
                         <h6 class="card-text" id="card-user-name" chat_id="${chat.id}">${chat.isGroupChat ? chat.chatName : receiver.userName}</h6>
                         <p class="card-text" id="last-message" style="font-size: small;" chat_id="${chat.id}">${chat.lastMessage ? chat.lastMessage : ''}</p>
                     </div>
-                    <div class="dropdown my-3">
+                    <div class="dropdown">
                             <svg viewBox="0 0 24 24" height="24" width="24" preserveAspectRatio="xMidYMid meet"
                                 class="dropdown-toggle" version="1.1" x="0px" y="0px" enable-background="new 0 0 24 24"
                                 data-bs-toggle="dropdown">
@@ -743,7 +743,7 @@ async function showAllChats(chats) {
                                     </button>
                                 </li>
                             </ul>
-                        </div>
+                    </div>
             </div>
         </div>`
     })
@@ -770,7 +770,13 @@ function convertToCustomFormat(isoString, status = false) {
     const today = new Date(); // Current date and time
     const options = { hour: 'numeric', minute: 'numeric', hour12: true };
     if (status) {
-        return "last seen today at " + date.toLocaleTimeString('en-US', options);
+        if (date.toDateString() === today.toDateString()) {
+            // If the date is today, display "today" instead of the date
+            return "last seen today at " + date.toLocaleTimeString('en-US', options);
+        }
+        else {
+            return "last seen " + date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) + " at " + date.toLocaleTimeString('en-US', options);
+        }
     }
     if (date.toDateString() === today.toDateString()) {
         // If the date is today, display "today" instead of the date
