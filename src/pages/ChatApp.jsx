@@ -191,7 +191,10 @@ export default function ChatApp() {
       const savedMessage = response.data.data.chatMessageDetails;
 
       // Append locally
-      setMessages(prev => [...prev, savedMessage]);
+      setMessages(prev => {
+        if (prev.some(m => m.id === savedMessage.id)) return prev;
+        return [...prev, savedMessage];
+      });
 
       // Emit socket message passing full message object
       if (activeChatDetails && !activeChatDetails.isGroupChat) {
@@ -229,15 +232,24 @@ export default function ChatApp() {
     });
   };
 
-  // Clear chat history
-  const handleClearHistory = async () => {
-    if (!activeChatId) return;
+  // Delete chat and its history
+  const handleClearHistory = async (chatId) => {
+    const targetChatId = chatId || activeChatId;
+    if (!targetChatId) return;
     try {
-      await api.delete(`/chats/${activeChatId}/messages`);
-      setMessages([]);
-      updateChatsPreview(activeChatId, '');
+      await api.delete(`/chats/${targetChatId}/messages`);
+      
+      // Remove chat from the sidebar list in state
+      setChats(prev => prev.filter(c => c.id !== targetChatId));
+      
+      // If we are deleting the active chat, reset messages and active chat state
+      if (targetChatId === activeChatId) {
+        setMessages([]);
+        setActiveChatId(null);
+        setActiveChatDetails(null);
+      }
     } catch (error) {
-      console.error('Error clearing history:', error);
+      console.error('Error deleting chat:', error);
     }
   };
 
@@ -285,17 +297,19 @@ export default function ChatApp() {
 
     // 1. Private messages
     const onPrivateMsg = ({ userId, message }) => {
+      if (activeChatId == message.chatId) {
+        setMessages(prev => {
+          if (prev.some(m => m.id === message.id)) return prev;
+          return [...prev, message];
+        });
+        
+        // Mark as read immediately since the chat window is open
+        socket.emit('readMessages', { chatId: message.chatId });
+      }
+
       setChats(prevChats => {
         const matchingChat = prevChats.find(c => !c.isGroupChat && c.id === message.chatId);
         if (matchingChat) {
-          // If active chat is the sender, append it
-          if (activeChatId === matchingChat.id) {
-            setMessages(prev => [...prev, message]);
-            
-            // Mark as read immediately since the chat window is open
-            socket.emit('readMessages', { chatId: matchingChat.id });
-          }
-          
           // Update preview and float to top
           const chatIndex = prevChats.findIndex(c => c.id === matchingChat.id);
           const updated = [...prevChats];
@@ -309,8 +323,13 @@ export default function ChatApp() {
 
     // 2. Group messages
     const onGroupMsg = ({ userId, message }) => {
-      if (activeChatDetails?.isGroupChat && activeChatId === message.chatId) {
-        setMessages(prev => [...prev, message]);
+      if (activeChatDetails?.isGroupChat && activeChatId == message.chatId) {
+        setMessages(prev => {
+          if (prev.some(m => m.id === message.id)) return prev;
+          return [...prev, message];
+        });
+        // Mark as read immediately since the chat window is open
+        socket.emit('readMessages', { chatId: message.chatId });
       }
 
       setChats(prevChats => {
@@ -350,16 +369,24 @@ export default function ChatApp() {
 
     // 5. Individual message delivery status updates
     const onMessageStatusUpdated = ({ messageId, status, chatId }) => {
-      if (activeChatId === chatId) {
-        setMessages(prev => prev.map(m => m.id === messageId ? { ...m, status } : m));
+      if (activeChatId == chatId) {
+        setMessages(prev => prev.map(m => {
+          if (m.id === messageId) {
+            // Prevent downgrading (read > delivered > sent)
+            if (m.status === 'read') return m;
+            if (m.status === 'delivered' && status === 'sent') return m;
+            return { ...m, status };
+          }
+          return m;
+        }));
       }
     };
 
     // 6. Bulk messages delivery updates (when recipient logs in)
     const onMessagesDelivered = ({ chatIds, recipientId, messageIds }) => {
-      if (activeChatId && chatIds.includes(activeChatId)) {
+      if (activeChatId && chatIds.some(id => id == activeChatId)) {
         setMessages(prev => prev.map(m => 
-          m.senderId === currentUser?.userId && m.status === 'sent' && (!messageIds || messageIds.includes(m.id))
+          m.senderId == (currentUser?.userId || currentUser?.id) && m.status === 'sent' && (!messageIds || messageIds.includes(m.id))
             ? { ...m, status: 'delivered' } 
             : m
         ));
@@ -368,9 +395,9 @@ export default function ChatApp() {
 
     // 7. Bulk messages read updates (when recipient opens the chat)
     const onMessagesRead = ({ chatId, readerId }) => {
-      if (activeChatId === chatId) {
+      if (activeChatId == chatId) {
         setMessages(prev => prev.map(m => 
-          m.senderId === currentUser?.userId && m.status !== 'read' 
+          m.senderId == (currentUser?.userId || currentUser?.id) && m.status !== 'read' 
             ? { ...m, status: 'read' } 
             : m
         ));
@@ -379,7 +406,7 @@ export default function ChatApp() {
 
     // 8. Single message deleted in real-time
     const onMessageDeleted = ({ chatId, messageId }) => {
-      if (activeChatId === chatId) {
+      if (activeChatId == chatId) {
         setMessages(prev => prev.filter(m => m.id !== messageId));
       }
       fetchChats(currentUser);

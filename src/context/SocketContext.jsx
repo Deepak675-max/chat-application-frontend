@@ -19,7 +19,12 @@ export const SocketProvider = ({ children }) => {
     });
 
     if (userId) {
-      newSocket.emit('storeUserInfo', { userId });
+      newSocket.on('connect', () => {
+        newSocket.emit('storeUserInfo', { userId });
+      });
+      if (newSocket.connected) {
+        newSocket.emit('storeUserInfo', { userId });
+      }
     }
 
     setSocket(newSocket);

@@ -221,6 +221,10 @@ export default function ChatBox({
               senderName = sender ? sender.userName : 'User';
             }
 
+            console.log("message",m);
+            console.log("is me = ", isMe);
+            console.log("is group = ", isGroup);
+
             return (
               <div
                 key={m.id}
@@ -270,14 +274,14 @@ export default function ChatBox({
                               <CheckCheck className="w-3.5 h-3.5 text-slate-500" />
                             )}
                             {m.status === 'read' && (
-                              <CheckCheck className="w-3.5 h-3.5 text-indigo-650" />
+                              <CheckCheck className="w-3.5 h-3.5 text-blue-500" />
                             )}
                           </>
                         )}
                         {isGroup && (
                           <>
                             {m.status === 'read' ? (
-                              <CheckCheck className="w-3.5 h-3.5 text-indigo-650" />
+                              <CheckCheck className="w-3.5 h-3.5 text-blue-500" />
                             ) : (
                               <Check className="w-3.5 h-3.5 text-slate-400" />
                             )}
